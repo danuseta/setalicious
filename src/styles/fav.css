@@ -1,0 +1,59 @@
+.browse-button-wrapper {
+    height: 80px;
+    margin-top: 2rem;
+  }
+  
+  .browse-button-container {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .browse-button-container.sticky {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    /* background-color: var(--background-color); */
+    /* box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); */
+    animation: slideUp 0.3s ease;
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  .browse-restaurants-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--warna-utama);
+    color: white;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  
+  .browse-restaurants-button:hover {
+    background-color: var(--hover-color);
+  }
+  
+  .empty-favorites {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-kedua);
+  }
+  
+  .empty-icon {
+    font-size: 4rem;
+    color: var(--warna-kedua);
+    margin-bottom: 1rem;
+  }

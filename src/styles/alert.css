@@ -1,0 +1,65 @@
+.swal-custom {
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+.swal-title {
+  font-size: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+  color: var(--text-kedua);
+  font-weight: 600 !important;
+}
+
+.swal-text {
+  color: var(--text-kedua);
+}
+
+.swal-text span {
+  font-weight: bold;
+  color: var(--warna-utama);
+}
+  
+.swal2-icon.swal2-success {
+  border-color: var(--warna-utama) !important;
+  color: var(--warna-utama) !important;
+}
+
+.swal2-icon.swal2-success [class^=swal2-success-line] {
+  background-color: var(--warna-utama) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: var(--warna-utama) !important;
+}
+
+.swal2-icon.swal2-info {
+  border-color: var(--warna-kedua) !important;
+  color: var(--warna-kedua) !important;
+}
+
+.swal2-toast {
+  background-color: var(--background-color) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+}
+
+.swal2-toast .swal2-title {
+  color: var(--text-utama) !important;
+  font-size: 1rem !important;
+  margin: 0.5rem 0 !important;
+}
+
+.swal2-toast .swal2-timer-progress-bar {
+  background-color: var(--warna-utama) !important;
+}
+
+.offline-indicator {
+  font-size: 0.8em;
+  color: #666;
+  margin-left: 8px;
+}
+
+.offline-review {
+  opacity: 0.8;
+}

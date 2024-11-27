@@ -1,0 +1,395 @@
+@media screen and (min-width: 520px) {
+    .restaurant-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .brand h1 {
+        font-size: 1.5rem;
+    }
+
+    .hamburger {
+        display: none;
+    }
+
+    .nav {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 0;
+        transform: none;
+        box-shadow: none;
+        background: none;
+    }
+
+    .nav-list {
+        flex-direction: row;
+        gap: 2rem;
+    }
+
+    .nav-list a {
+        color: white;
+    }
+
+    .hero {
+        min-height: 400px;
+    }
+
+    .hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .hero h2 {
+        font-size: 2rem;
+    }
+
+    .hero h3 {
+        font-size: 1.2rem;
+    }
+
+    main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .content__heading {
+        font-size: 1.75rem;
+    }
+
+    .restaurant-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .restaurant-image-container {
+        height: 180px;
+    }
+
+    .restaurant-info {
+        padding: 1rem;
+    }
+
+    .restaurant-name {
+        font-size: 1.2rem;
+    }
+
+    .restaurant-description {
+        font-size: 0.9rem;
+    }
+
+    .restaurant-detail {
+        padding: 2rem 2rem 3rem;
+    }
+
+    .detail-image-container {
+        height: 350px;
+    }
+
+    .back-button-details {
+        width: 40px;
+        height: 40px;
+    }
+
+    .back-button-details i {
+        font-size: 1.2rem;
+    }
+
+    .detail-info {
+        padding: 1.5rem;
+    }
+
+    .detail-header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .restaurant-title {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .detail-name {
+        font-size: 1.75rem;
+    }
+
+    .favorite-button {
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+    }
+
+    .favorite-button .icon {
+        font-size: 1.75rem;
+    }
+
+    .detail-rating {
+        font-size: 1.25rem;
+        padding: 0.3rem 0.8rem;
+    }
+
+    .detail-rating .icon {
+        font-size: 1.25rem;
+    }
+
+    .detail-meta {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .detail-city,
+    .detail-address {
+        width: auto;
+        font-size: 0.9rem;
+    }
+
+    .detail-description,
+    .detail-menus,
+    .detail-reviews {
+        padding: 2rem;
+    }
+
+    .detail-description h3,
+    .detail-menus h3,
+    .detail-reviews h3 {
+        font-size: 1.5rem;
+    }
+
+    .menu-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+    .menu-item {
+        font-size: 1rem;
+    }
+
+    .review-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .review-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .review-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .review-name {
+        font-size: 1.1rem;
+    }
+
+    .restaurant-detail-title {
+        font-size: 1.75rem;
+    }
+
+    .submit-review {width: auto;
+    }
+
+    .search-container {
+        margin-bottom: 3rem;
+      }
+
+      .detail-image-container {
+        height: 350px;
+      }
+    
+      .back-button-details {
+        width: 40px;
+        height: 40px;
+        top: 20px;
+        left: 20px;
+      }
+    
+      .back-button-details i {
+        font-size: 1.3rem;
+      }
+      
+    
+    
+      
+}
+
+@media screen and (min-width: 1024px) {
+    .hero {
+        min-height: 500px;
+    }
+
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+
+    .hero h3 {
+        font-size: 1.3rem;
+    }
+
+    .detail-image-container {
+        height: 400px;
+      }
+    
+      .back-button-details {
+        width: 44px;
+        height: 44px;
+      }
+    
+      .back-button-details i {
+        font-size: 1.4rem;
+      }
+
+    .content__heading {
+        font-size: 2rem;
+    }
+
+    .restaurant-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    .restaurant-image-container {
+        height: 200px;
+    }
+
+    .restaurant-name {
+        font-size: 1.25rem;
+    }
+
+    .restaurant-description {
+        font-size: 0.9rem;
+    }
+
+    .restaurant-detail {
+        padding: 2.5rem 2rem 3rem;
+    }
+
+    .detail-image-container {
+        height: 400px;
+    }
+
+    .detail-name {
+        font-size: 2rem;
+    }
+
+    .favorite-button {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+
+    .favorite-button .icon {
+        font-size: 2rem;
+    }
+
+    .detail-rating {
+        font-size: 1.5rem;
+    }
+
+    .detail-rating .icon {
+        font-size: 1.5rem;
+    }
+
+    .detail-city,
+    .detail-address {
+        font-size: 1rem;
+    }
+
+    .menu-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+      }
+
+    .review-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .restaurant-detail-title {
+        font-size: 2rem;
+    }
+
+    .add-review {
+        padding: 2rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 1rem;
+    }
+
+    .submit-review {
+        font-size: 1rem;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+
+    .detail-image-container {
+        height: 450px;
+      }
+    
+      .detail-image-container:hover .detail-image {
+        transform: scale(1.1);
+      }
+
+      .restaurant-detail {
+        padding: 2.5rem 2rem 3rem;
+      }
+      .detail-card,
+      .detail-description,
+      .detail-menus,
+      .detail-reviews {
+        margin: 0 0 1.5rem;
+      }
+
+      .detail-menus {
+        padding: 2rem;
+      }
+    
+    .detail-card,
+    .detail-description,
+    .detail-menus,
+    .detail-reviews {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .detail-card:hover,
+    .detail-description:hover,
+    .detail-menus:hover,
+    .detail-reviews:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .restaurant-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+    }
+
+    .menu-item:hover,
+    .review-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-info {
+        font-size: 1rem;
+    }
+
+    .feedback {
+        font-size: 1rem;
+        padding: 1.25rem 2.5rem;
+    }
+}
