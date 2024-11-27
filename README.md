@@ -38,23 +38,6 @@ npm run serve
 - Webpack
 - PWA Manifest
 
-## Struktur Proyek
-```
-src/
-├── scripts/
-│   ├── data/
-│   │   ├── sumber-restoran.js
-│   │   └── restoran-favorit-idb.js
-│   ├── views/
-│   │   ├── beranda.js
-│   │   ├── detail.js
-│   │   └── favorit.js
-│   └── sw.js
-├── styles/
-├── template/
-└── public/
-```
-
 ## Fitur Utama
 - Jelajahi restoran
 - Tambah ke favorit
@@ -79,6 +62,6 @@ npm run test:watch
 ISC
 
 ## Kontak
-Danu Setawiardana
+Muhammad Danu Seta Wiardana
 danusetawiardana@gmail.com
 ```
