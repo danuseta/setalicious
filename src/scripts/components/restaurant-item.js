@@ -1,5 +1,4 @@
 import FavoriteRestaurantIdb from '../data/favorite-restaurant-idb';
-import Swal from 'sweetalert2';
 
 class RestaurantItem extends HTMLElement {
   set restaurant(restaurant) {
