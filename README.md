@@ -1,6 +1,3 @@
-
-
-```
 # Setalicious 🍽️  
 **Nikmati pengalaman terbaik dalam menemukan restoran favorit Anda!**  
 
