@@ -1,67 +1,82 @@
-# Setalicious 🍽️
 
-## Fitur Utama
-- Jelajahi restoran dari API
-- Tambah restoran favorit
-- Kelola ulasan restoran
-- Aplikasi Web Progresif (PWA)
-- Dukungan offline
-- Desain responsif
 
-## Prasyarat
-- Node.js (v16+)
-- npm
+```
+# Setalicious 🍽️  
+**Nikmati pengalaman terbaik dalam menemukan restoran favorit Anda!**  
 
-## Instalasi
-1. Clone repositori
-2. Pasang dependensi:
+## ✨ Fitur Utama  
+- **Jelajahi restoran**: Temukan restoran terbaik dari API terintegrasi.  
+- **Tambah ke favorit**: Simpan restoran kesukaan Anda dengan mudah.  
+- **Kelola ulasan**: Bagikan pengalaman Anda dengan ulasan langsung.  
+- **PWA siap offline**: Akses kapan saja, bahkan tanpa internet.  
+- **Responsif**: Desain yang pas di segala perangkat.  
+
+---
+
+## 🛠️ Teknologi yang Digunakan & Prasyarat  
+**Teknologi Utama**:  
+- Vanilla JavaScript (tanpa framework berat!)  
+- IndexedDB untuk penyimpanan lokal  
+- Workbox untuk service worker  
+- Webpack untuk modularisasi  
+- PWA Manifest untuk pengalaman seperti aplikasi  
+
+**Prasyarat**:  
+- Node.js (v16 ke atas)  
+- npm  
+
+---
+
+## 🚀 Instalasi  
+1. Clone repositori ini:  
+```bash
+git clone https://github.com/danuseta/setalicious.git
+cd setalicious
+```  
+
+2. Pasang semua dependensi:  
 ```bash
 npm install
-```
+```  
 
-3. Skrip pengembangan:
+3. Jalankan aplikasi:  
 ```bash
 # Jalankan server pengembangan
 npm run start-dev
 
-# Bangun untuk produksi
+# Bangun aplikasi untuk produksi
 npm run build
 
-# Layani versi produksi
+# Jalankan versi produksi
 npm run serve
-```
+```  
 
-## Teknologi Utama
-- JavaScript Vanilla
-- IndexedDB
-- Workbox (Service Worker)
-- Webpack
-- PWA Manifest
+---
 
-## Fitur Utama
-- Jelajahi restoran
-- Tambah ke favorit
-- Tambah ulasan
-- Dapat diakses offline
-
-## Pengujian
+## 🧪 Pengujian  
+Pastikan semua fitur bekerja dengan lancar!  
 ```bash
 # Jalankan tes
 npm test
 
-# Mode pantau
+# Jalankan tes dalam mode pantau
 npm run test:watch
-```
+```  
 
-## Optimasi
-- Kompresi gambar
-- Lazy loading
-- Analisis bundel
+---
 
-## Lisensi
-ISC
+## ⚡ Optimasi  
+- Kompresi gambar untuk kinerja maksimal.  
+- Lazy loading konten agar aplikasi lebih ringan.  
+- Analisis bundel menggunakan Webpack untuk efisiensi kode.  
 
-## Kontak
-Muhammad Danu Seta Wiardana
-danusetawiardana@gmail.com
-```
+---
+
+## 📄 Lisensi  
+Proyek ini dilisensikan di bawah lisensi **ISC**.  
+
+---
+
+## 📬 Kontak  
+**Muhammad Danu Seta Wiardana**  
+📧 danusetawiardana@gmail.com  
