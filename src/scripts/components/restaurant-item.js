@@ -1,5 +1,22 @@
 import FavoriteRestaurantIdb from '../data/favorite-restaurant-idb';
 
+// const simulateSlowImage = (url, minDelay = 2000, maxDelay = 4000) => {
+//   return new Promise((resolve, reject) => {
+//     const delay = Math.random() * (maxDelay - minDelay) + minDelay;
+//     const img = new Image();
+
+//     img.onload = () => {
+//       setTimeout(() => resolve(url), delay);
+//     };
+
+//     img.onerror = () => {
+//       reject(new Error('Failed to load image'));
+//     };
+
+//     img.src = url;
+//   });
+// };
+
 class RestaurantItem extends HTMLElement {
   set restaurant(restaurant) {
     this._restaurant = restaurant;
@@ -37,87 +54,150 @@ class RestaurantItem extends HTMLElement {
   }
 
   async render() {
-    const isFavorite = await FavoriteRestaurantIdb.getRestaurant(this._restaurant.id);
+    try {
+      const isFavorite = await FavoriteRestaurantIdb.getRestaurant(this._restaurant.id);
 
-    this.innerHTML = `
-      <article class="restaurant-item">
-        <div class="restaurant-image-container">
-          <div class="image-loading"></div>
-          <img 
-            class="restaurant-image" 
-            src="${CONFIG.BASE_IMAGE_URL}${this._restaurant.pictureId}" 
-            alt="${this._restaurant.name}"
-            loading="lazy"
-          >
-        </div>
-        <div class="restaurant-info">
-          <h3 class="restaurant-name">${this._restaurant.name}</h3>
-          <div class="restaurant-meta">
-            <div class="restaurant-city">
-              <span class="icon" aria-hidden="true">📍</span>
-              <span>${this._restaurant.city}</span>
+      this.innerHTML = `
+        <article class="restaurant-item">
+          <div class="restaurant-image-container">
+            <!-- Restaurant image placeholder -->
+            <div class="restaurant-image-placeholder"></div>
+            
+            <!-- Restaurant image with lazy loading -->
+            <img 
+              class="lazyload restaurant-image blur-up"
+              data-src="${CONFIG.BASE_IMAGE_URL}${this._restaurant.pictureId}"
+              data-sizes="auto"
+              alt="${this._restaurant.name}"
+            >
+            
+            <!-- Loading progress bar -->
+            <div class="image-loading-progress"></div>
+          </div>
+          
+          <div class="restaurant-info">
+            <h3 class="restaurant-name">${this._restaurant.name}</h3>
+            <div class="restaurant-meta">
+              <div class="restaurant-city">
+                <span class="icon" aria-hidden="true">📍</span>
+                <span>${this._restaurant.city}</span>
+              </div>
+              <div class="restaurant-rating">
+                <span class="icon" aria-hidden="true">⭐</span>
+                <span>${this._restaurant.rating}</span>
+              </div>
             </div>
-            <div class="restaurant-rating">
-              <span class="icon" aria-hidden="true">⭐</span>
-              <span>${this._restaurant.rating}</span>
+            <p class="restaurant-description">${this._restaurant.description}</p>
+            <div class="restaurant-actions">
+              <a 
+                href="#/detail/${this._restaurant.id}" 
+                class="view-detail"
+                aria-label="View details of ${this._restaurant.name}"
+              >
+                View Details
+              </a>
+              <button 
+                class="favorite-button ${isFavorite ? 'favorite' : ''}"
+                aria-label="${isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}"
+                data-id="${this._restaurant.id}"
+              >
+                <span class="icon" aria-hidden="true">
+                  ${isFavorite ? '❤️' : '🤍'}
+                </span>
+              </button>
             </div>
           </div>
-          <p class="restaurant-description">${this._restaurant.description}</p>
-          <div class="restaurant-actions">
-            <a 
-              href="#/detail/${this._restaurant.id}" 
-              class="view-detail"
-              aria-label="View details of ${this._restaurant.name}"
-            >
-              View Details
-            </a>
-            <button 
-              class="favorite-button ${isFavorite ? 'favorite' : ''}"
-              aria-label="${isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}"
-              data-id="${this._restaurant.id}"
-            >
-              <span class="icon" aria-hidden="true">
-                ${isFavorite ? '❤️' : '🤍'}
-              </span>
-            </button>
-          </div>
-        </div>
-      </article>
-    `;
+        </article>
+      `;
 
-    this._initImageLoading();
-    this._initFavoriteButton();
+      this._initFavoriteButton();
+      this._handleImageLoading();
+    } catch (error) {
+      console.error('Error rendering restaurant item:', error);
+      this._renderError();
+    }
   }
 
-  _initImageLoading() {
-    const imageContainer = this.querySelector('.restaurant-image-container');
-    const image = imageContainer.querySelector('.restaurant-image');
-    const loadingIndicator = imageContainer.querySelector('.image-loading');
+  _handleImageLoading() {
+    const image = this.querySelector('.restaurant-image');
+    const progressBar = this.querySelector('.image-loading-progress');
+    if (!image || !progressBar) return;
 
-    image.addEventListener('load', () => {
-      loadingIndicator.style.display = 'none';
+    image.addEventListener('lazyloaded', () => {
       image.classList.add('loaded');
+      progressBar.style.width = '100%';
+
+      setTimeout(() => {
+        progressBar.style.opacity = '0';
+      }, 200);
     });
 
-    image.addEventListener('error', async () => {
-      try {
-        const imageUrl = image.src;
-        const cache = await caches.open('images');
-        const cachedResponse = await cache.match(imageUrl);
+    requestAnimationFrame(() => {
+      progressBar.style.width = '90%';
+    });
 
-        if (cachedResponse) {
-          const blob = await cachedResponse.blob();
-          image.src = URL.createObjectURL(blob);
-        } else {
-          image.src = '/images/placeholder-restaurant.jpg';
-        }
-      } catch (error) {
-        console.warn('Failed to load image from cache:', error);
+    image.addEventListener('error', () => {
+      this._handleImageError(image, progressBar);
+    });
+  }
+
+  // async _handleImageLoading() {
+  //   const image = this.querySelector('.restaurant-image');
+  //   const progressBar = this.querySelector('.image-loading-progress');
+  //   if (!image || !progressBar) return;
+
+  //   try {
+  //     const originalSrc = image.dataset.src;
+  //     let loadingProgress = 0;
+
+  //     const progressInterval = setInterval(() => {
+  //       loadingProgress += 2;
+  //       if (loadingProgress <= 90) {
+  //         progressBar.style.width = `${loadingProgress}%`;
+  //       }
+  //     }, 50);
+
+  //     const imageUrl = await simulateSlowImage(originalSrc);
+
+  //     clearInterval(progressInterval);
+  //     progressBar.style.width = '100%';
+
+  //     image.src = imageUrl;
+  //     image.classList.add('loaded');
+
+  //     setTimeout(() => {
+  //       progressBar.style.opacity = '0';
+  //     }, 200);
+
+  //   } catch (error) {
+  //     console.warn('Failed to load image:', error);
+  //     this._handleImageError(image, progressBar);
+  //   }
+  // }
+
+  async _handleImageError(image, progressBar) {
+    try {
+      const imageUrl = image.dataset.src;
+      const cache = await caches.open('restaurant-images');
+      const cachedResponse = await cache.match(imageUrl);
+
+      if (cachedResponse) {
+        const blob = await cachedResponse.blob();
+        image.src = URL.createObjectURL(blob);
+        image.classList.add('loaded');
+      } else {
         image.src = '/images/placeholder-restaurant.jpg';
-      } finally {
-        loadingIndicator.style.display = 'none';
+        image.classList.add('error');
       }
-    });
+    } catch (error) {
+      console.warn('Failed to load image:', error);
+      image.src = '/images/placeholder-restaurant.jpg';
+      image.classList.add('error');
+    } finally {
+      if (progressBar) {
+        progressBar.style.opacity = '0';
+      }
+    }
   }
 
   async _initFavoriteButton() {
@@ -134,51 +214,48 @@ class RestaurantItem extends HTMLElement {
 
         if (isFavorite) {
           await FavoriteRestaurantIdb.deleteRestaurant(restaurantId);
-          Swal.fire({
-            icon: 'success',
-            title: 'Removed from Favorites',
-            html: `<strong>${this._restaurant.name}</strong> removed from your favorites`,
-            position: 'center',
-            timer: 2000,
-            showConfirmButton: false,
-            background: '#fff',
-            customClass: {
-              popup: 'swal-custom',
-              title: 'swal-title',
-              htmlContainer: 'swal-text'
-            }
-          });
+          this._showFeedback('Removed from Favorites', 'success');
         } else {
           await FavoriteRestaurantIdb.putRestaurant(this._restaurant);
-          Swal.fire({
-            icon: 'success',
-            title: 'Added to Favorites',
-            html: `<strong>${this._restaurant.name}</strong> added to your favorites`,
-            position: 'center',
-            timer: 2000,
-            showConfirmButton: false,
-            background: '#fff',
-            customClass: {
-              popup: 'swal-custom',
-              title: 'swal-title',
-              htmlContainer: 'swal-text'
-            }
-          });
+          this._showFeedback('Added to Favorites', 'success');
         }
 
         this.render();
       } catch (error) {
         console.error('Error toggling favorite status:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Unable to update favorite status',
-          position: 'center',
-          timer: 2000,
-          showConfirmButton: false
-        });
+        this._showFeedback('Unable to update favorite status', 'error');
       }
     });
+  }
+
+  _showFeedback(message, type = 'success') {
+    Swal.fire({
+      icon: type,
+      title: type === 'success' ? message : 'Error',
+      html: `<strong>${this._restaurant.name}</strong> ${message.toLowerCase()}`,
+      position: 'center',
+      timer: 2000,
+      showConfirmButton: false,
+      background: '#fff',
+      customClass: {
+        popup: 'swal-custom',
+        title: 'swal-title',
+        htmlContainer: 'swal-text'
+      }
+    });
+  }
+
+  _renderError() {
+    this.innerHTML = `
+      <article class="restaurant-item error">
+        <div class="error-message">
+          <p>Failed to load restaurant data</p>
+          <button onclick="location.reload()" class="retry-button">
+            Try Again
+          </button>
+        </div>
+      </article>
+    `;
   }
 }
 

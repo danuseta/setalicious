@@ -47,9 +47,8 @@ const Home = {
   },
 
   _generateSkeletons() {
-    let skeletons = '';
-    for (let i = 0; i < 6; i++) {
-      skeletons += `
+    return Array(6).fill()
+      .map(() => `
         <div class="restaurant-item skeleton">
           <div class="restaurant-image-container">
             <div class="skeleton-img"></div>
@@ -67,9 +66,7 @@ const Home = {
             </div>
           </div>
         </div>
-      `;
-    }
-    return skeletons;
+      `).join('');
   },
 
   async afterRender() {
@@ -78,7 +75,6 @@ const Home = {
       searchForm: document.querySelector('#searchForm'),
       searchInput: document.querySelector('#searchInput'),
       noResults: document.querySelector('#no-results'),
-      loadingIndicator: document.querySelector('.loading-indicator'),
       showAllButton: document.querySelector('.all-restaurants-button')
     };
 
@@ -93,42 +89,48 @@ const Home = {
         await this._loadAllRestaurants(elements);
       }
 
-      if (elements.showAllButton) {
-        elements.showAllButton.addEventListener('click', async () => {
-          if (elements.searchInput) {
-            elements.searchInput.value = '';
-          }
-          
-          const url = new URL(window.location);
-          url.searchParams.delete('q');
-          window.history.pushState({}, '', url);
-
-          await this._loadAllRestaurants(elements);
-        });
-      }
-
-      elements.searchForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const query = elements.searchInput.value.trim();
-
-        const url = new URL(window.location);
-        if (query) {
-          url.searchParams.set('q', query);
-        } else {
-          url.searchParams.delete('q');
-        }
-        window.history.pushState({}, '', url);
-
-        if (query) {
-          await this._performSearch(query, elements);
-        } else {
-          await this._loadAllRestaurants(elements);
-        }
-      });
+      this._initializeEventListeners(elements);
     } catch (error) {
       console.error('Error in afterRender:', error);
       this.renderError(error, elements.restaurantsContainer);
     }
+  },
+
+  _initializeEventListeners(elements) {
+    const { searchForm, searchInput, showAllButton } = elements;
+
+    if (showAllButton) {
+      showAllButton.addEventListener('click', async () => {
+        if (searchInput) {
+          searchInput.value = '';
+        }
+
+        const url = new URL(window.location);
+        url.searchParams.delete('q');
+        window.history.pushState({}, '', url);
+
+        await this._loadAllRestaurants(elements);
+      });
+    }
+
+    searchForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+
+      const url = new URL(window.location);
+      if (query) {
+        url.searchParams.set('q', query);
+      } else {
+        url.searchParams.delete('q');
+      }
+      window.history.pushState({}, '', url);
+
+      if (query) {
+        await this._performSearch(query, elements);
+      } else {
+        await this._loadAllRestaurants(elements);
+      }
+    });
   },
 
   async _loadAllRestaurants(elements) {
@@ -136,26 +138,26 @@ const Home = {
 
     try {
       const cachedRestaurants = await this._fetchRestaurantsFromCache();
-      if (cachedRestaurants) {
+      if (cachedRestaurants?.length) {
         this.renderRestaurants(cachedRestaurants, restaurantsContainer);
         this._showResults(restaurantsContainer, noResults);
-        this._initializeLazyLoading();
       }
 
       const networkRestaurants = await this._fetchRestaurantsFromNetwork();
-      if (networkRestaurants) {
+      if (networkRestaurants?.length) {
         const shouldUpdate = !cachedRestaurants ||
           JSON.stringify(networkRestaurants) !== JSON.stringify(cachedRestaurants);
 
         if (shouldUpdate) {
           this.renderRestaurants(networkRestaurants, restaurantsContainer);
           this._showResults(restaurantsContainer, noResults);
-          this._initializeLazyLoading();
         }
       }
     } catch (error) {
       console.error('Load error:', error);
-      this.renderError(error, restaurantsContainer);
+      if (!cachedRestaurants?.length) {
+        this.renderError(error, restaurantsContainer);
+      }
     }
   },
 
@@ -164,24 +166,7 @@ const Home = {
       const response = await fetch(`${CONFIG.BASE_URL}/list`);
       const { restaurants } = await response.json();
 
-      const BATCH_SIZE = 5;
-      for (let i = 0; i < restaurants.length; i += BATCH_SIZE) {
-        const batch = restaurants.slice(i, i + BATCH_SIZE);
-        await Promise.all(batch.map((restaurant) =>
-          fetch(`${CONFIG.BASE_URL}/detail/${restaurant.id}`)
-            .then((res) => res.json())
-            .then((data) => {
-              if ('serviceWorker' in navigator) {
-                caches.open('restaurant-details')
-                  .then((cache) => cache.put(
-                    `${CONFIG.BASE_URL}/detail/${restaurant.id}`,
-                    new Response(JSON.stringify(data))
-                  ));
-              }
-            })
-            .catch((err) => console.warn(`Detail fetch failed for ${restaurant.id}:`, err))
-        ));
-      }
+      this._prefetchRestaurantDetails(restaurants);
 
       return restaurants;
     } catch (error) {
@@ -190,84 +175,60 @@ const Home = {
     }
   },
 
+  async _prefetchRestaurantDetails(restaurants) {
+    const BATCH_SIZE = 5;
+    const cache = await caches.open('restaurant-details');
+
+    for (let i = 0; i < restaurants.length; i += BATCH_SIZE) {
+      const batch = restaurants.slice(i, i + BATCH_SIZE);
+      await Promise.allSettled(batch.map(async (restaurant) => {
+        try {
+          const response = await fetch(`${CONFIG.BASE_URL}/detail/${restaurant.id}`);
+          const data = await response.json();
+          await cache.put(
+            `${CONFIG.BASE_URL}/detail/${restaurant.id}`,
+            new Response(JSON.stringify(data))
+          );
+        } catch (err) {
+          console.warn(`Detail fetch failed for ${restaurant.id}:`, err);
+        }
+      }));
+    }
+  },
+
   async _fetchRestaurantsFromCache() {
     try {
-      const apiCache = await caches.open('api-responses');
-      const listResponse = await apiCache.match(`${CONFIG.BASE_URL}/list`);
+      const [apiCache, detailCache] = await Promise.all([
+        caches.open('api-responses'),
+        caches.open('restaurant-details')
+      ]);
 
+      const listResponse = await apiCache.match(`${CONFIG.BASE_URL}/list`);
       if (listResponse) {
-        const data = await listResponse.json();
-        if (data.restaurants && data.restaurants.length > 0) {
-          return data.restaurants;
-        }
+        const { restaurants } = await listResponse.json();
+        if (restaurants?.length) return restaurants;
       }
 
-      const detailCache = await caches.open('restaurant-details');
-      const detailKeys = await detailCache.keys();
+      const keys = await detailCache.keys();
+      const detailResponses = await Promise.all(
+        keys
+          .filter((key) => key.url.includes('/detail/'))
+          .map((key) => detailCache.match(key))
+      );
 
-      const detailUrls = detailKeys.filter((key) => key.url.includes('/detail/'));
+      const restaurants = await Promise.all(
+        detailResponses
+          .filter(Boolean)
+          .map(async (response) => {
+            const data = await response.json();
+            return data.restaurant;
+          })
+      );
 
-      const detailPromises = detailUrls.map(async (key) => {
-        const response = await detailCache.match(key);
-        if (response) {
-          const data = await response.json();
-          return data.restaurant;
-        }
-        return null;
-      });
-
-      const detailResults = await Promise.all(detailPromises);
-      const restaurants = detailResults.filter(Boolean);
-
-      return restaurants.length > 0 ? restaurants : null;
+      return restaurants.filter(Boolean);
     } catch (error) {
       console.warn('Cache fetch failed:', error);
       return null;
-    }
-  },
-
-  async _prefetchRestaurantDetailsAndImages(restaurants) {
-    if (!restaurants?.length) return;
-
-    const BATCH_SIZE = 5;
-    const seen = new Set();
-
-    for (let i = 0; i < restaurants.length; i += BATCH_SIZE) {
-      const batch = restaurants.slice(i, i + BATCH_SIZE)
-        .filter((r) => !seen.has(r.id));
-
-      batch.forEach((r) => seen.add(r.id));
-
-      await Promise.all(batch.map((restaurant) =>
-        this._optimizedImageLoading(`${CONFIG.BASE_IMAGE_URL}${restaurant.pictureId}`)
-          .catch((err) => console.warn(`Image prefetch failed for ${restaurant.id}:`, err))
-      ));
-    }
-  },
-
-  _initializeLazyLoading() {
-    if (!('IntersectionObserver' in window)) return;
-
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          this._loadImage(img);
-          observer.unobserve(img);
-        }
-      });
-    }, {
-      rootMargin: '50px'
-    });
-
-    document.querySelectorAll('.restaurant-item__thumbnail')
-      .forEach((img) => imageObserver.observe(img));
-  },
-
-  _loadImage(img) {
-    const actualSrc = img.dataset.src;
-    if (actualSrc) {
-      img.src = actualSrc;
     }
   },
 
@@ -279,29 +240,20 @@ const Home = {
       if (noResults) noResults.style.display = 'none';
 
       let restaurants = await this._fetchRestaurantsFromNetwork();
-      if (!restaurants) {
+      if (!restaurants?.length) {
         restaurants = await this._fetchRestaurantsFromCache();
       }
 
-      if (!restaurants) {
+      if (!restaurants?.length) {
         throw new Error('No restaurant data available');
       }
 
-      const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 0);
-      
-      const filteredRestaurants = restaurants.filter((restaurant) => {
-        const searchableText = [
-          restaurant.name || '',
-          restaurant.city || ''
-        ].join(' ').toLowerCase();
+      const searchTerms = query.toLowerCase().split(' ').filter(Boolean);
+      const filteredRestaurants = this._filterRestaurants(restaurants, searchTerms);
 
-        return searchTerms.every(term => searchableText.includes(term));
-      });
-
-      if (filteredRestaurants.length > 0) {
+      if (filteredRestaurants.length) {
         this.renderRestaurants(filteredRestaurants, restaurantsContainer);
         this._showResults(restaurantsContainer, noResults);
-        this._initializeLazyLoading();
       } else {
         this._showNoResults(restaurantsContainer, noResults);
       }
@@ -309,16 +261,21 @@ const Home = {
       console.error('Search error:', error);
       this.renderError(error, restaurantsContainer);
     }
-},
-
-  _showLoading(loadingIndicator, restaurantsContainer, noResults) {
-    if (loadingIndicator) loadingIndicator.classList.add('active');
-    if (restaurantsContainer) restaurantsContainer.style.display = 'none';
-    if (noResults) noResults.style.display = 'none';
   },
 
-  _hideLoading(loadingIndicator) {
-    if (loadingIndicator) loadingIndicator.classList.remove('active');
+  _filterRestaurants(restaurants, searchTerms) {
+    return restaurants.filter((restaurant) => {
+      const searchableText = [
+        restaurant.name,
+        restaurant.city,
+        restaurant.description
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      return searchTerms.every((term) => searchableText.includes(term));
+    });
   },
 
   _showResults(restaurantsContainer, noResults) {
@@ -332,15 +289,19 @@ const Home = {
   },
 
   renderRestaurants(restaurants, container) {
-    if (!container) return;
+    if (!container || !restaurants?.length) return;
 
     container.innerHTML = '';
+
+    const fragment = document.createDocumentFragment();
     restaurants.forEach((restaurant) => {
-      const restaurantItemElement = document.createElement('restaurant-item');
-      restaurantItemElement.setAttribute('data-id', restaurant.id);
-      restaurantItemElement.restaurant = restaurant;
-      container.appendChild(restaurantItemElement);
+      const restaurantElement = document.createElement('restaurant-item');
+      restaurantElement.setAttribute('data-id', restaurant.id);
+      restaurantElement.restaurant = restaurant;
+      fragment.appendChild(restaurantElement);
     });
+
+    container.appendChild(fragment);
   },
 
   renderError(error, container) {

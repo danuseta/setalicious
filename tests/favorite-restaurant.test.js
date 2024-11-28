@@ -52,16 +52,21 @@ describe('Menyukai Restoran', () => {
 
   it('tidak menyukai restoran dengan id undefined', async () => {
     await TestFactories.createLikeButtonPresenterWithRestaurant({ id: undefined });
-    document.querySelector('#likeButton').dispatchEvent(new Event('click'));
-    expect(await FavoriteRestaurantIdb.getAllRestaurants()).toHaveLength(0);
-  });
-  
-  it('tidak menyukai restoran dengan id null', async () => {
-    await TestFactories.createLikeButtonPresenterWithRestaurant({ id: null });
+
+    await FavoriteRestaurantIdb.deleteRestaurant(1);
+
     document.querySelector('#likeButton').dispatchEvent(new Event('click'));
     expect(await FavoriteRestaurantIdb.getAllRestaurants()).toHaveLength(0);
   });
 
+  it('tidak menyukai restoran dengan id null', async () => {
+    await TestFactories.createLikeButtonPresenterWithRestaurant({ id: null });
+
+    await FavoriteRestaurantIdb.deleteRestaurant(1);
+
+    document.querySelector('#likeButton').dispatchEvent(new Event('click'));
+    expect(await FavoriteRestaurantIdb.getAllRestaurants()).toHaveLength(0);
+  });
 });
 
 describe('Batal Menyukai Restoran', () => {
@@ -92,8 +97,10 @@ describe('Batal Menyukai Restoran', () => {
     await TestFactories.createLikeButtonPresenterWithRestaurant({ id: 1 });
 
     document.querySelector('#likeButton').dispatchEvent(new Event('click'));
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const semuaRestoran = await FavoriteRestaurantIdb.getAllRestaurants();
-    
     expect(semuaRestoran).toHaveLength(0);
   });
 
@@ -102,24 +109,34 @@ describe('Batal Menyukai Restoran', () => {
     await FavoriteRestaurantIdb.deleteRestaurant(1);
 
     document.querySelector('#likeButton').dispatchEvent(new Event('click'));
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const semuaRestoran = await FavoriteRestaurantIdb.getAllRestaurants();
-    
     expect(semuaRestoran).toHaveLength(0);
   });
 
   it('tidak crash ketika menghapus restoran dengan id undefined', async () => {
     await TestFactories.createLikeButtonPresenterWithRestaurant({ id: undefined });
+
+    await FavoriteRestaurantIdb.deleteRestaurant(1);
+
     document.querySelector('#likeButton').dispatchEvent(new Event('click'));
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const semuaRestoran = await FavoriteRestaurantIdb.getAllRestaurants();
     expect(semuaRestoran).toHaveLength(0);
   });
-  
+
   it('tetap menampilkan widget yang tepat setelah batal menyukai', async () => {
     await TestFactories.createLikeButtonPresenterWithRestaurant({ id: 1 });
+
     document.querySelector('#likeButton').dispatchEvent(new Event('click'));
-    
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     expect(document.querySelector('[aria-label="Tambah ke favorit"]')).toBeTruthy();
     expect(document.querySelector('[aria-label="Hapus dari favorit"]')).toBeFalsy();
   });
-  
 });

@@ -16,30 +16,36 @@ const LikeButtonPresenter = {
     }
 
     try {
-      if (await this._isRestaurantExist(id)) {
+      const isExist = await this._isRestaurantExist(id);
+      if (isExist) {
         this._renderLiked();
       } else {
         this._renderLike();
       }
-    } catch {
+    } catch (error) {
+      console.error('Error in _renderButton:', error);
       this._renderLike();
     }
   },
 
   async _isRestaurantExist(id) {
-    const restaurant = await this._favoriteRestaurants.getRestaurant(id);
-    return !!restaurant;
+    try {
+      const restaurant = await this._favoriteRestaurants.getRestaurant(id);
+      return !!restaurant;
+    } catch {
+      return false;
+    }
   },
 
   _renderLike() {
     this._likeButtonContainer.innerHTML = `
-        <button aria-label="Tambah ke favorit" id="likeButton" class="like">
-          <i class="like-icon" aria-hidden="true"></i>
-        </button>
-      `;
+      <button aria-label="Tambah ke favorit" id="likeButton" class="like">
+        <i class="like-icon" aria-hidden="true"></i>
+      </button>
+    `;
 
-    const likeButton = document.querySelector('#likeButton');
-    likeButton.addEventListener('click', async () => {
+    const likeButton = this._likeButtonContainer.querySelector('#likeButton');
+    likeButton?.addEventListener('click', async () => {
       if (this._restaurant?.id) {
         await this._favoriteRestaurants.putRestaurant(this._restaurant);
         await this._renderButton();
@@ -49,15 +55,19 @@ const LikeButtonPresenter = {
 
   _renderLiked() {
     this._likeButtonContainer.innerHTML = `
-        <button aria-label="Hapus dari favorit" id="likeButton" class="like">
-          <i class="liked-icon" aria-hidden="true"></i>
-        </button>
-      `;
+      <button aria-label="Hapus dari favorit" id="likeButton" class="like">
+        <i class="liked-icon" aria-hidden="true"></i>
+      </button>
+    `;
 
-    const likeButton = document.querySelector('#likeButton');
-    likeButton.addEventListener('click', async () => {
-      await this._favoriteRestaurants.deleteRestaurant(this._restaurant.id);
-      await this._renderButton();
+    const likeButton = this._likeButtonContainer.querySelector('#likeButton');
+    likeButton?.addEventListener('click', async () => {
+      try {
+        await this._favoriteRestaurants.deleteRestaurant(this._restaurant.id);
+        await this._renderButton();
+      } catch (error) {
+        console.error('Error deleting restaurant:', error);
+      }
     });
   },
 };

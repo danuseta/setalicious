@@ -27,7 +27,7 @@ Scenario('menambah review untuk restoran', async ({ I }) => {
     console.log('Existing reviews:', existingReviews);
   }
 
-  const reviewerName = 'Test Customer Review'; 
+  const reviewerName = 'Test Customer Review';
   const reviewText = 'Review dari automated testing E2E';
 
   I.seeElement('#review-form');
@@ -35,16 +35,16 @@ Scenario('menambah review untuk restoran', async ({ I }) => {
   I.fillField('review', reviewText);
 
   I.click('.submit-review');
-  I.wait(3); 
+  I.wait(3);
 
   I.waitForElement('.review-item');
-  
+
   const lastReviewerName = await I.grabTextFrom(locate('.reviewer-name').last());
   const lastReviewText = await I.grabTextFrom(locate('.review-text').last());
-  
+
   console.log('Expected reviewer name:', reviewerName);
   console.log('Actual reviewer name:', lastReviewerName);
-  
+
   assert.strictEqual(lastReviewerName, reviewerName);
   assert.strictEqual(lastReviewText, reviewText);
 });
@@ -59,8 +59,8 @@ Scenario('menambah review untuk restoran', async ({ I }) => {
 Scenario('validasi form review kosong', async ({ I }) => {
   I.click(locate('.view-detail').first());
   I.waitForElement('#review-form');
-  
+
   I.click('.submit-review');
-  
+
   I.seeElement('input:invalid');
 });

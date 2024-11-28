@@ -18,7 +18,7 @@ Scenario('menyukai satu restoran', async ({ I }) => {
 
   I.waitForElement('.restaurant-item');
   const firstRestoName = await I.grabTextFrom(locate('.restaurant-name').first());
-  
+
   I.click(locate('.view-detail').first());
   I.waitForElement('#restaurant-detail');
   I.seeElement('#favoriteButton');
@@ -26,7 +26,7 @@ Scenario('menyukai satu restoran', async ({ I }) => {
 
   I.amOnPage('/#/favorite');
   I.waitForElement('.restaurant-item');
-  
+
   const likedRestoName = await I.grabTextFrom('.restaurant-name');
   assert.strictEqual(likedRestoName, firstRestoName);
 });
@@ -53,12 +53,12 @@ Scenario('menyukai beberapa restoran', async ({ I }) => {
 
   I.amOnPage('/#/favorite');
   I.waitForElement('.restaurant-item');
-  
+
   const numberOfFavorites = await I.grabNumberOfVisibleElements('.restaurant-item');
   assert.strictEqual(numberOfFavorites, 2);
 
   const favoritedRestos = await I.grabTextFrom('.restaurant-name');
-  assert.ok(Array.isArray(favoritedRestos) ? 
+  assert.ok(Array.isArray(favoritedRestos) ?
     favoritedRestos.includes(firstRestoName) && favoritedRestos.includes(secondRestoName) :
     favoritedRestos === firstRestoName || favoritedRestos === secondRestoName
   );

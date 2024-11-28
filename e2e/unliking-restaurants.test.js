@@ -17,16 +17,16 @@ Before(({ I }) => {
 Scenario('batal menyukai satu restoran', async ({ I }) => {
   I.waitForElement('.content__heading');
   I.see('Explore Restaurants', '.content__heading');
-  
+
   const restoName = await I.grabTextFrom(locate('.restaurant-name').first());
   I.click(locate('.view-detail').first());
-  
+
   I.waitForElement('#favoriteButton');
   I.click('#favoriteButton');
 
   I.amOnPage('/#/favorite');
   I.waitForElement('.restaurant-item');
-  
+
   const likedRestoName = await I.grabTextFrom('.restaurant-name');
   assert.strictEqual(likedRestoName, restoName);
 
@@ -36,9 +36,9 @@ Scenario('batal menyukai satu restoran', async ({ I }) => {
 
   I.amOnPage('/#/favorite');
   I.waitForElement('.content');
-  
+
   I.see("You haven't added any restaurants to your favorites yet");
-  
+
   const remainingFavorites = await I.grabNumberOfVisibleElements('.restaurant-item');
   assert.strictEqual(remainingFavorites, 0);
 });
@@ -52,41 +52,41 @@ Scenario('batal menyukai satu restoran', async ({ I }) => {
 
 Scenario('batal menyukai beberapa restoran', async ({ I }) => {
   I.waitForElement('.restaurant-item');
-  
+
   const firstRestoName = await I.grabTextFrom(locate('.restaurant-name').first());
   I.click(locate('.view-detail').first());
   I.waitForElement('#favoriteButton');
   I.click('#favoriteButton');
   I.amOnPage('/#/');
-  
+
   const secondRestoName = await I.grabTextFrom(locate('.restaurant-name').at(2));
   I.click(locate('.view-detail').at(2));
   I.waitForElement('#favoriteButton');
   I.click('#favoriteButton');
-  
+
   I.amOnPage('/#/favorite');
   I.waitForElement('.restaurant-item');
-  
+
   let numberOfFavorites = await I.grabNumberOfVisibleElements('.restaurant-item');
   assert.strictEqual(numberOfFavorites, 2);
-  
+
   I.click(locate('.view-detail').first());
   I.waitForElement('#favoriteButton');
   I.click('#favoriteButton');
-  
+
   I.amOnPage('/#/favorite');
   I.waitForElement('.content');
-  
+
   numberOfFavorites = await I.grabNumberOfVisibleElements('.restaurant-item');
   assert.strictEqual(numberOfFavorites, 1);
-  
+
   I.click(locate('.view-detail').first());
   I.waitForElement('#favoriteButton');
   I.click('#favoriteButton');
-  
+
   I.amOnPage('/#/favorite');
   I.waitForElement('.content');
-  
+
   I.see("You haven't added any restaurants to your favorites yet");
   numberOfFavorites = await I.grabNumberOfVisibleElements('.restaurant-item');
   assert.strictEqual(numberOfFavorites, 0);

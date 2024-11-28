@@ -292,72 +292,110 @@ main {
 }
 
 .restaurant-image-container {
-    position: relative;
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    background-color: #f0f0f0;
-  }
-  
-  .restaurant-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.2);
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
-  }
-  
-  .restaurant-image-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgba(0, 0, 0, 0.4)
-    );
-    opacity: 0;
-    z-index: 1;
-    transition: opacity 0.4s ease;
-  }
-  
-  .restaurant-image-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent
-    );
-    transform: skewX(-25deg);
-    transition: 0.75s ease;
-    z-index: 2;
-  }
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
 
-  .restaurant-item:hover .restaurant-image {
-    transform: scale(1);
-  }
-  
-  .restaurant-item:hover .restaurant-image-container::before {
-    left: 150%;
-    transition: 0.75s ease;
-  }
-  
-  .restaurant-item:hover .restaurant-image-container::after {
-    left: 150%;
-    transition: 0.75s ease;
-  }
-  
+.restaurant-image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(10px);
+  transform: scale(1.1);
+  transition: opacity 0.3s ease;
+}
+
+.restaurant-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
 
 .restaurant-image.loaded {
-    opacity: 1;
+  opacity: 1;
+  transition: opacity 400ms ease-in;
 }
+
+.restaurant-image.loaded + .restaurant-image-placeholder {
+  opacity: 0;
+}
+
+.image-loading-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--warna-utama);
+  transition: width 0.2s ease, opacity 0.3s ease;
+  z-index: 2;
+}
+
+.restaurant-item:hover .restaurant-image.loaded {
+  transform: scale(1.1);
+  transition: transform 0.5s ease-in-out;
+}
+
+.restaurant-item .restaurant-image.loaded {
+  transform: scale(1);
+  transition: transform 0.5s ease-in-out;
+}
+
+
+.restaurant-image-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+
+.restaurant-image-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.8s ease;
+  z-index: 2;
+}
+
+.restaurant-item:hover .restaurant-image-container::before {
+  opacity: 1;
+}
+
+.restaurant-item:hover .restaurant-image-container::after {
+  transform: translateX(100%);
+}
+
+  @media (hover: hover) {
+    .restaurant-item:hover .restaurant-image.loaded {
+      transform: scale(1.1);
+    }
+  }
 
 /* Loading State */
 /* .image-loading {
@@ -377,15 +415,6 @@ main {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   } */
-  
-  .restaurant-image {
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .restaurant-image.loaded {
-    opacity: 1;
-  }
 
 .restaurant-info {
     padding: 0.75rem;

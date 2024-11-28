@@ -24,11 +24,11 @@ Scenario('mencari restaurant yang ada', async ({ I }) => {
   I.click('.search-button');
 
   I.waitForElement('.restaurant-item');
-  
+
   const searchResults = await I.grabTextFrom('.restaurant-name');
   assert.ok(
-    Array.isArray(searchResults) 
-      ? searchResults.some(name => name.includes(targetRestaurant))
+    Array.isArray(searchResults)
+      ? searchResults.some((name) => name.includes(targetRestaurant))
       : searchResults.includes(targetRestaurant)
   );
 });
@@ -50,8 +50,8 @@ Scenario('mencari restaurant yang tidak ada', async ({ I }) => {
   I.click('.search-button');
 
   I.waitForElement('#no-results');
-  I.see('No restaurants found matching your search');
-  
+  I.see('No restaurants found matching your search.');
+
   I.seeElement('.all-restaurants-button');
   I.click('.all-restaurants-button');
   I.waitForElement('.restaurant-item');
@@ -78,8 +78,8 @@ Scenario('pencarian dengan spasi dan case berbeda', async ({ I }) => {
   I.waitForElement('.restaurant-item');
   const searchResults = await I.grabTextFrom('.restaurant-name');
   assert.ok(
-    Array.isArray(searchResults) 
-      ? searchResults.some(name => name.toLowerCase() === originalName.toLowerCase())
+    Array.isArray(searchResults)
+      ? searchResults.some((name) => name.toLowerCase() === originalName.toLowerCase())
       : searchResults.toLowerCase() === originalName.toLowerCase()
   );
 });
@@ -101,8 +101,8 @@ Scenario('pencarian dengan kata kunci parsial', async ({ I }) => {
   I.waitForElement('.restaurant-item');
   const searchResults = await I.grabTextFrom('.restaurant-name');
   assert.ok(
-    Array.isArray(searchResults) 
-      ? searchResults.some(name => name.toLowerCase().includes(partialQuery.toLowerCase()))
+    Array.isArray(searchResults)
+      ? searchResults.some((name) => name.toLowerCase().includes(partialQuery.toLowerCase()))
       : searchResults.toLowerCase().includes(partialQuery.toLowerCase())
   );
 });
@@ -116,10 +116,10 @@ Scenario('pencarian dengan kata kunci parsial', async ({ I }) => {
 Scenario('submit form pencarian kosong', async ({ I }) => {
   I.waitForElement('.content__heading');
   I.seeElement('#searchForm');
-  
+
   I.fillField('#searchInput', '');
   I.click('.search-button');
-  
+
   I.waitForElement('.restaurant-item');
   const initialCount = await I.grabNumberOfVisibleElements('.restaurant-item');
   assert.ok(initialCount > 0);
@@ -133,18 +133,18 @@ Scenario('submit form pencarian kosong', async ({ I }) => {
 */
 Scenario('pencarian dengan nama kota', async ({ I }) => {
   I.waitForElement('.restaurant-item');
-  
+
   // Gunakan nama kota yang ada di daftar restaurant
   const originalCity = (await I.grabTextFrom(locate('.restaurant-city'))).replace('📍', '').trim();
-  
+
   I.fillField('#searchInput', originalCity);
   I.click('.search-button');
-  
+
   I.waitForElement('.restaurant-item');
   const visibleRestaurants = await I.grabTextFrom('.restaurant-city');
   assert.ok(
     Array.isArray(visibleRestaurants)
-      ? visibleRestaurants.some(city => city.toLowerCase().includes(originalCity.toLowerCase()))
+      ? visibleRestaurants.some((city) => city.toLowerCase().includes(originalCity.toLowerCase()))
       : visibleRestaurants.toLowerCase().includes(originalCity.toLowerCase())
   );
 });
